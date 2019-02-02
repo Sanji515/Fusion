@@ -51,6 +51,7 @@ class Constants:
     )
 
 
+
 class Project(models.Model):
     unique_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     project_name = models.CharField(max_length=50, default='')
