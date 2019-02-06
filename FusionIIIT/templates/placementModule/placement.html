@@ -286,6 +286,7 @@
                                  <div class="ui segments">
                                    <div class="ui horizontal segments">
                                      <div class="ui segment">
+
                                       <form method="post" class="ui form" role="form" action="{% url 'placement:placement' %}">
                                        {% csrf_token %}
                                        <input type="hidden" name="delete_sch_key" value="{{ sch.pk }}">
@@ -293,6 +294,7 @@
                                            <i class="delete red icon"></i>
                                        </button>
                                        </form>
+
                                        <strong><h3>{{ sch.notify_id.placement_type }} | {{ sch.notify_id.company_name }} | {{ sch.placement_date }}</h3></strong><br>
 
                                        Time of Message: {{ sch.notify_id.timestamp }}
@@ -438,9 +440,10 @@
                                     </div>
                                     <input type="file" name="attached_file">
                                     <div class="field">
-                                        <button name="schedulesubmit" value="schedulesubmit" class="ui right floated large primary button" type="submit">
-                                            Submit
-                                        </button>
+                                      <label><br></label>
+                                      <button name="schedulesubmit" value="schedulesubmit" class="ui right floated large primary button" type="submit">
+                                          Submit
+                                      </button>
                                     </div>
 
                                     <br>
@@ -713,6 +716,9 @@
               $(obj).click();
             });
         }
+
+
+
 
     </script>
 

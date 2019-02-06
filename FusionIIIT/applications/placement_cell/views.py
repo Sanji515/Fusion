@@ -1,6 +1,7 @@
 import os
 import shutil
 import decimal
+import datetime
 import zipfile
 import xlwt
 from cgi import escape
@@ -580,7 +581,7 @@ def StudentRecords(request):
         student_record_check = 1
         form1 = SearchStudentRecord(request.POST)
         if form1.is_valid():
-            print('valid')
+            print('search form for student record valid')
             if form1.cleaned_data['name']:
                 name = form1.cleaned_data['name']
 
@@ -590,11 +591,21 @@ def StudentRecords(request):
                 rollno = form1.cleaned_data['rollno']
             else:
                 rollno = ''
+
             programme = form1.cleaned_data['programme']
-            if form1.cleaned_data['department']:
-                department = form1.cleaned_data['department']
-            else:
-                department = ''
+
+            department = []
+            if form1.cleaned_data['dep_btech']:
+                department.extend(form1.cleaned_data['dep_btech'])
+            if form1.cleaned_data['dep_mtech']:
+                department.extend(form1.cleaned_data['dep_mtech'])
+            if form1.cleaned_data['dep_bdes']:
+                department.extend(form1.cleaned_data['dep_bdes'])
+            if form1.cleaned_data['dep_mdes']:
+                department.extend(form1.cleaned_data['dep_mdes'])
+            if form1.cleaned_data['dep_phd']:
+                department.extend(form1.cleaned_data['dep_phd'])
+
             if form1.cleaned_data['cpi']:
                 cpi = form1.cleaned_data['cpi']
             else:
@@ -610,6 +621,9 @@ def StudentRecords(request):
             request.session['debar'] = debar
             request.session['placed_type'] = placed_type
 
+            print(department)
+            print('before request --- students')
+
             students = Student.objects.filter(
                 Q(id__in=ExtraInfo.objects.filter(Q(
                 user__in=User.objects.filter(Q(first_name__icontains=name)),
@@ -618,6 +632,9 @@ def StudentRecords(request):
                 programme=programme,
                 cpi__gte=cpi)).filter(Q(pk__in=StudentPlacement.objects.filter(
                     Q(debar=debar, placed_type=placed_type)).values('unique_id_id'))).order_by('id')
+
+
+            print('after request --- students')
 
             st = students
 
@@ -785,10 +802,18 @@ def StudentRecords(request):
 
                 programme = form13.cleaned_data['programme']
 
-                if form13.cleaned_data['department']:
-                    department = form13.cleaned_data['department']
-                else:
-                    department = ''
+                department = []
+                if form13.cleaned_data['dep_btech']:
+                    department.extend(form13.cleaned_data['dep_btech'])
+                if form13.cleaned_data['dep_mtech']:
+                    department.extend(form13.cleaned_data['dep_mtech'])
+                if form13.cleaned_data['dep_bdes']:
+                    department.extend(form13.cleaned_data['dep_bdes'])
+                if form13.cleaned_data['dep_mdes']:
+                    department.extend(form13.cleaned_data['dep_mdes'])
+                if form13.cleaned_data['dep_phd']:
+                    department.extend(form13.cleaned_data['dep_phd'])
+
 
                 if form13.cleaned_data['cpi']:
                     cpi = form13.cleaned_data['cpi']
@@ -817,6 +842,7 @@ def StudentRecords(request):
 
                 PlacementStatus.objects.bulk_create( [PlacementStatus(notify_id=notify,
                             unique_id=student,)for student in students] )
+                students = ''
 
     context = {
         'form1': form1,
@@ -1296,10 +1322,6 @@ def PlacementStatistics(request):
 
 
 
-
-
-
-
 def export_to_xls(qs):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="report.xls"'
@@ -1745,7 +1767,6 @@ def cv(request, username):
 
     user = get_object_or_404(User, Q(username=username))
     profile = get_object_or_404(ExtraInfo, Q(user=user))
-    import datetime
     now = datetime.datetime.now()
     if int(str(profile.id)[:2]) == 20:
         if (now.month>4):
