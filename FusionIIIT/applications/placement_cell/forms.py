@@ -298,8 +298,8 @@ class AddSchedule(forms.Form):
     time = forms.TimeField(label='time', widget=forms.widgets.TimeInput(attrs={'type': "time",
                                                                                 'value':"00:00",
                                                                                 'min':"0:00",
-                                                                                'max':"18:02"}))
-    ctc = forms.DecimalField(label="ctc")
+                                                                                'max':"24:00"}))
+    ctc = forms.DecimalField(label="ctc", widget=forms.NumberInput(attrs={'min': 0}) )
     company_name = forms.CharField(widget=forms.TextInput(attrs={'max_length': 100,
                                                               'class': 'field'}),
                                    label="company_name")
@@ -314,6 +314,14 @@ class AddSchedule(forms.Form):
     attached_file = forms.FileField(required=False)
 
     placement_date = forms.DateField(label='placement_date', widget=forms.DateInput(attrs={'class':'datepicker'}))
+
+    def clean_ctc(self):
+        ctc = self.cleaned_data['ctc']
+        # print('form validation \n\n\n\n', ctc)
+        if ctc <= 0:
+            raise forms.ValidationError("CTC must be positive value")
+
+        return ctc
 
 
 class SearchPlacementRecord(forms.Form):
